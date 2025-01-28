@@ -48,9 +48,12 @@ This is a simple, web-based event management system built with pure PHP and MySQ
 **Admin:**
 
 - **Email:** <admin@example.com>
-- **Password:** Admin1234
-  
+- **Password:** 123456
 
+**User:**
+
+- **Email:** <test@gmail.com>
+- **Password:** 123456
 
 ## Usage
 
@@ -62,8 +65,4 @@ This is a simple, web-based event management system built with pure PHP and MySQ
 - **Admin Dashboard:** Access event reports and other admin functions.
 - **Event Reports:** Admins can download attendee lists in CSV format.
 
-## Bonus Features
 
-- **Search:** Use the search bar on the event dashboard to find events or attendees.
-- **AJAX Registration:** Event registration is enhanced with AJAX for a smoother user experience.
-- **JSON API:** Access event details programmatically at `api/events.php` (e.g., `api/events.php?id=1`).

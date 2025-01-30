@@ -56,6 +56,15 @@ function validateFilter() {
 <div class="events-container"
     style="max-width: 1400px; margin: 50px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Upcoming Events</h2>
+
+    <?php if (empty($events)): ?>
+    <div style="text-align: center; padding: 20px;">
+        <p style="font-size: 18px; color: #555; margin-bottom: 20px;">Currently, there are no events.</p>
+        <a href="create_event.php" class="btn btn-primary"
+            style="background-color: #007bff; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; color: #fff;">Create
+            Event</a>
+    </div>
+    <?php else: ?>
     <div class="row mb-3 align-items-center">
         <!-- Create Event Button -->
         <div class="col-md-6 d-flex align-items-center">
@@ -82,7 +91,6 @@ function validateFilter() {
             </form>
         </div>
     </div>
-
     <!-- Events Table -->
     <table class="table table-striped" style="margin-top: 20px;">
         <thead>
@@ -120,8 +128,8 @@ function validateFilter() {
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?php endif; ?>
 </div>
-
 
 <script>
 function validateSearch() {

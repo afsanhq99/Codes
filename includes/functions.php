@@ -255,3 +255,12 @@ function isEventCreator($userId, $event)
     // Check if the user ID matches the event's creator ID
     return isset($event['created_by']) && ($userId == $event['created_by']);
 }
+
+
+function isUserRegistered($userId, $eventId)
+{
+    global $db;
+    $stmt = $db->prepare("SELECT COUNT(*) FROM registrations WHERE user_id = ? AND event_id = ?");
+    $stmt->execute([$userId, $eventId]);
+    return $stmt->fetchColumn() > 0;
+}

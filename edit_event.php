@@ -21,83 +21,48 @@ if (!$event) {
     exit;
 }
 
-// Authorization check
-if (!isAdmin() && $event['created_by'] != $_SESSION['user_id']) {
-    header("Location: index.php");
-    exit;
-}
+// Fetch the number of registered attendees for the event
+$registeredAttendees = getRegisteredAttendeesCount($eventId);
 
-$errors = [];
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $description = $_POST['description'];
-    $date = $_POST['date'];
-    $time = $_POST['time'];
-    $location = $_POST['location'];
-    $maxCapacity = $_POST['max_capacity'];
+// Calculate remaining capacity
+$remainingCapacity = $event['max_capacity'] - $registeredAttendees;
 
-    // Server-side validation
-    if (empty($name) || empty($date) || empty($time) || empty($location) || empty($maxCapacity)) {
-        $errors[] = "Please fill in all required fields.";
-    }
-    // Add more validation as needed
-
-    if (empty($errors)) {
-        if (updateEvent($eventId, $name, $description, $date, $time, $location, $maxCapacity)) {
-            header("Location: event_details.php?id=" . $eventId);
-            exit;
-        } else {
-            $errors[] = "Error updating event.";
-        }
-    }
-}
+// Check if the current user is already registered for the event
+$isRegistered = isUserRegistered($_SESSION['user_id'], $eventId);
 
 include 'templates/header.php';
 ?>
 
-<div class="container">
-    <h2>Edit Event</h2>
-    <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= $error ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-    <form method="post">
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" class="form-control" name="name" value="<?= htmlspecialchars($event['name']) ?>"
-                required>
-        </div>
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea class="form-control" name="description"><?= htmlspecialchars($event['description']) ?></textarea>
-        </div>
-        <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" class="form-control" name="date" value="<?= htmlspecialchars($event['date']) ?>"
-                required>
-        </div>
-        <div class="form-group">
-            <label for="time">Time:</label>
-            <input type="time" class="form-control" name="time" value="<?= htmlspecialchars($event['time']) ?>"
-                required>
-        </div>
-        <div class="form-group">
-            <label for="location">Location:</label>
-            <input type="text" class="form-control" name="location" value="<?= htmlspecialchars($event['location']) ?>"
-                required>
-        </div>
-        <div class="form-group">
-            <label for="max_capacity">Max Capacity:</label>
-            <input type="number" class="form-control" name="max_capacity"
-                value="<?= htmlspecialchars($event['max_capacity']) ?>" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-    </form>
+<div class="container"
+    style="max-width: 800px; margin: 50px auto; padding: 30px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+    <h2 style="font-size: 28px; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center;">
+        <?= htmlspecialchars($event['name']) ?></h2>
+    <p style="font-size: 16px; color: #555; margin-bottom: 15px;"><strong>Description:</strong>
+        <?= htmlspecialchars($event['description']) ?></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 15px;"><strong>Date:</strong>
+        <?= htmlspecialchars($event['date']) ?></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 15px;"><strong>Time:</strong>
+        <?= htmlspecialchars($event['time']) ?></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 15px;"><strong>Location:</strong>
+        <?= htmlspecialchars($event['location']) ?></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 15px;"><strong>Max Capacity:</strong>
+        <?= htmlspecialchars($event['max_capacity']) ?></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 20px;"><strong>Remaining Capacity:</strong>
+        <?= htmlspecialchars($remainingCapacity) ?></p>
+
+    <div class="btn-group" style="display: flex; gap: 10px; justify-content: center;">
+        <a href="index.php" class="btn btn-secondary"
+            style="background-color: #6c757d; border: none; padding: 10px 20px; font-size: 16px; border-radius: 8px; color: #fff; text-decoration: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;">
+            Back to Events
+        </a>
+        <?php if (!isEventCreator($_SESSION['user_id'], $event) && !$isRegistered): // Hide Register button if user is the creator or already registered 
+        ?>
+        <a href="register_event.php?id=<?= $event['id'] ?>" class="btn btn-primary"
+            style="background-color: #007bff; border: none; padding: 10px 20px; font-size: 16px; border-radius: 8px; color: #fff; text-decoration: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;">
+            Register
+        </a>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php include 'templates/footer.php'; ?>
